@@ -67,8 +67,8 @@ func (this *beanTagProcessor) TagProcess(bean interface{}, field reflect.Value, 
 			case 1:
 				fieldBean = fieldTypeBeans[0]
 			default:
-				util.Panic("ambiguous bean type [%v] injct except 1 but fine more in bean %v",
-					field.Type(), reflect.TypeOf(bean))
+				util.Panic("ambiguous bean type [%v] injct except 1 but find %v in bean %v",
+					field.Type(), len(fieldTypeBeans), reflect.TypeOf(bean))
 			}
 		}
 	}

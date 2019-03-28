@@ -8,7 +8,7 @@ import (
 
 type IConfigLoader interface {
 	Config() reader.Values
-	Load(cfgFileName string)
+	Load(cfgFileName string) error
 }
 
 type IConfigLoaderAware interface {
@@ -33,8 +33,8 @@ func (this *DefaultConfigAutoLoader) Config() reader.Values {
 	return this.conf
 }
 
-func (this *DefaultConfigAutoLoader) Load(cfgFileName string) {
-	this.conf.Load(file.NewSource(
+func (this *DefaultConfigAutoLoader) Load(cfgFileName string) error {
+	return this.conf.Load(file.NewSource(
 		file.WithPath(cfgFileName),
 	))
 }

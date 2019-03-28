@@ -151,6 +151,9 @@ func (this *defaultBeanContainerBuilder) Build() {
 	})
 
 	tagParser := TagParserHelper.GetTagParser(this.beanContainer)
+	if tagParser == nil {
+		util.Panic("no tag parser found!!!, you must add exace 1 tag parser")
+	}
 
 	for _, tagProcessor := range tagProcessors {
 		for _, bean := range this.beanContainer.GetAllBeans() {
