@@ -1,7 +1,7 @@
 package goioc
 
 import (
-	"github.com/gosrv/util"
+	"github.com/gosrv/goioc/util"
 	"math"
 	"reflect"
 	"sort"

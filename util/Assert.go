@@ -2,7 +2,6 @@ package util
 
 import (
 	"fmt"
-	"github.com/xiaotie/gcluster/util"
 	"log"
 )
 
@@ -14,7 +13,7 @@ func Assert(condition bool, msg string) {
 
 func VerifyNotNull(ins interface{}) {
 	if ins == nil {
-		util.Panic("nil interface")
+		Panic("nil interface")
 	}
 }
 
