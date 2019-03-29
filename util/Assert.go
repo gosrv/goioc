@@ -43,7 +43,9 @@ func IsNilAnonymousField(ins interface{}, ftype reflect.Type) bool {
 	for i := 0; i < bcValue.NumField(); i++ {
 		fieldValue := bcValue.Field(i)
 		fieldType := bcType.Field(i)
-
+		if !fieldType.Anonymous {
+			continue
+		}
 		if fieldType.Type.AssignableTo(ftype) {
 			fieldValue = Hack.ValuePatchWrite(fieldValue)
 			return fieldValue.IsNil()
