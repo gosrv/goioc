@@ -1,4 +1,4 @@
-package goioc
+package gioc
 
 import (
 	"github.com/gosrv/goioc/util"
@@ -70,7 +70,11 @@ func (this *defaultBeanContainer) doAddBean(bean interface{}) {
 }
 
 func (this *defaultBeanContainer) GetBeanByName(name string) interface{} {
-	return this.namedBeans[name]
+	bean, ok := this.namedBeans[name]
+	if !ok {
+		return nil
+	}
+	return bean
 }
 
 func (this *defaultBeanContainer) GetBeanByType(pt reflect.Type) []interface{} {

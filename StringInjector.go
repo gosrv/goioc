@@ -1,4 +1,4 @@
-package goioc
+package gioc
 
 import (
 	"encoding/json"

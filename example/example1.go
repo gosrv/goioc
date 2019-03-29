@@ -35,9 +35,9 @@ func (this *BeanB) helloB() {
 
 func main() {
 	// init
-	builder := goioc.NewBeanContainerBuilder()
-	builder.AddBean(goioc.NewBeanTagProcessor(builder.GetBeanContainer()))
-	builder.AddBean(goioc.NewTagParser())
+	builder := gioc.NewBeanContainerBuilder()
+	builder.AddBean(gioc.NewBeanTagProcessor(builder.GetBeanContainer()))
+	builder.AddBean(gioc.NewTagParser())
 
 	// add beans and build
 	builder.AddBean(&BeanA{msg: "hello "}, &BeanB{"world"})

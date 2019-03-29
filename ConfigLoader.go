@@ -1,4 +1,4 @@
-package goioc
+package gioc
 
 import (
 	"github.com/gosrv/goioc/util"

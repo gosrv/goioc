@@ -7,16 +7,16 @@ import (
 	"github.com/gosrv/goioc/util"
 )
 
-type BeanConfigBase struct {
+type BeanConfigCondition struct {
 	Name  string
 	Level int
 	Age   int
 }
 
-type BeanBase struct {
-	gioc.IConfigBase
-	ConfigA *BeanConfigBase `cfg:"cfg.a"`
-	ConfigB *BeanConfigBase `cfg:"cfg.b"`
+type BeanCondition struct {
+	gioc.IBeanCondition
+	ConfigA *BeanConfigCondition `cfg:"cfg.a"`
+	ConfigB *BeanConfigCondition `cfg:"cfg.b"`
 }
 
 func main() {
@@ -26,13 +26,15 @@ func main() {
 
 	// init
 	builder := gioc.NewBeanContainerBuilder()
+	builder.AddBean(loader)
 	builder.AddBean(gioc.NewBeanTagProcessor(builder.GetBeanContainer()))
 	builder.AddBean(gioc.NewConfigValueTagProcessor(loader))
 	builder.AddBean(gioc.NewTagParser())
+	builder.AddBean(gioc.NewBeanBeanConditionInjector())
 
-	builder.AddNamedBean("bean", &BeanBase{IConfigBase: gioc.NewConfigBase("cfg.base")})
+	builder.AddNamedBean("bean", &BeanCondition{IBeanCondition: gioc.NewConditionOnValue("cfg.base", true)})
 	builder.Build()
-	bean := builder.GetBeanContainer().GetBeanByName("bean").(*BeanBase)
+	bean := builder.GetBeanContainer().GetBeanByName("bean").(*BeanCondition)
 	data, _ := json.Marshal(bean)
 	fmt.Println(string(data))
 }

@@ -19,15 +19,15 @@ type Bean struct {
 }
 
 func main() {
-	loader := goioc.NewConfigLoader()
+	loader := gioc.NewConfigLoader()
 	err := loader.Load("example/conf/config.json")
 	util.VerifyNoError(err)
 
 	// init
-	builder := goioc.NewBeanContainerBuilder()
-	builder.AddBean(goioc.NewBeanTagProcessor(builder.GetBeanContainer()))
-	builder.AddBean(goioc.NewConfigValueTagProcessor(loader))
-	builder.AddBean(goioc.NewTagParser())
+	builder := gioc.NewBeanContainerBuilder()
+	builder.AddBean(gioc.NewBeanTagProcessor(builder.GetBeanContainer()))
+	builder.AddBean(gioc.NewConfigValueTagProcessor(loader))
+	builder.AddBean(gioc.NewTagParser())
 
 	builder.AddNamedBean("bean", &Bean{})
 	builder.Build()

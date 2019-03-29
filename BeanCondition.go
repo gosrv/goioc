@@ -1,4 +1,4 @@
-package goioc
+package gioc
 
 import (
 	"github.com/gosrv/goioc/util"
@@ -84,9 +84,8 @@ func (this *conditionOnValue) IsConditionPass() bool {
 	if this.loader == nil {
 		return false
 	}
-	val := ""
-	this.loader.Config().Get(this.value).Scan(&val)
-	return (len(val) == 0 && !this.exist) || (len(val) > 0 && this.exist)
+	_, ok := this.loader.Config().Map()[this.value]
+	return (!ok && !this.exist) || (ok && this.exist)
 }
 
 func NewConditionOnValue(value string, exist bool) IBeanCondition {
