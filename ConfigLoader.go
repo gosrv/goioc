@@ -1,6 +1,7 @@
 package goioc
 
 import (
+	"github.com/gosrv/goioc/util"
 	"github.com/micro/go-config"
 	"github.com/micro/go-config/reader"
 	"github.com/micro/go-config/source/file"
@@ -28,6 +29,7 @@ func (this configBase) ConfigBase() string {
 type IConfigLoader interface {
 	Config() reader.Values
 	Load(cfgFileName string) error
+	AutoLoad(func())
 }
 
 func NewConfigLoader() *configAutoLoader {
@@ -38,6 +40,14 @@ func NewConfigLoader() *configAutoLoader {
 
 type configAutoLoader struct {
 	conf config.Config
+}
+
+func (this *configAutoLoader) AutoLoad(loader func()) {
+	watch, err := this.RawConf().Watch()
+	util.VerifyNoError(err)
+	watch.Next()
+
+	loader()
 }
 
 func (this *configAutoLoader) RawConf() config.Config {
