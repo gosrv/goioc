@@ -2,6 +2,7 @@ package gioc
 
 import (
 	"github.com/gosrv/goioc/util"
+	"math"
 	"reflect"
 	"sort"
 )
@@ -142,12 +143,24 @@ func (this *defaultBeanContainerBuilder) Build() {
 	}
 	// nil check
 	for _, tp := range tagProcessors {
-		if util.IsNilAnonymousField(tp, ITagProcessorType) {
-			util.Panic("nil ITagProcessor interface in bean %v", reflect.TypeOf(tp))
+		if tp == nil {
+			util.Panic("nil tag processor")
+		}
+		if reflect.TypeOf(tp).AssignableTo(ITagProcessorPriorityType) && util.IsNilAnonymousField(tp, ITagProcessorPriorityType) {
+			util.Panic("nil ITagProcessorPriority interface in bean ITagProcessor:%v", reflect.TypeOf(tp))
 		}
 	}
+
 	sort.Slice(tagProcessors, func(i, j int) bool {
-		return tagProcessors[i].Priority() < tagProcessors[j].Priority()
+		ip := math.MaxInt32
+		jp := math.MaxInt32
+		if reflect.TypeOf(tagProcessors[i]).AssignableTo(ITagProcessorPriorityType) {
+			ip = tagProcessors[i].(ITagProcessorPriority).GetTagProcessorPriority()
+		}
+		if reflect.TypeOf(tagProcessors[j]).AssignableTo(ITagProcessorPriorityType) {
+			jp = tagProcessors[j].(ITagProcessorPriority).GetTagProcessorPriority()
+		}
+		return ip < jp
 	})
 
 	tagParser := TagParserHelper.GetTagParser(this.beanContainer)

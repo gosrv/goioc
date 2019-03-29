@@ -30,7 +30,7 @@ func (this *beanTagProcessor) TagProcessorName() string {
 	return BeanTagProcessor
 }
 
-func (this *beanTagProcessor) Priority() int {
+func (this *beanTagProcessor) TagProcessorPriority() int {
 	return PrioritySystem
 }
 
