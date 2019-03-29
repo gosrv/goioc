@@ -138,10 +138,25 @@ func (this *defaultBeanContainerBuilder) Build() {
 	this.buildCondition()
 
 	tagProcessors := TagProcessorHelper.GetTagProcessor(this.beanContainer)
+	if len(tagProcessors) == 0 {
+		return
+	}
+	// nil check
+	for _, tp := range tagProcessors {
+		if reflect.TypeOf(tp).AssignableTo(IPriorityType) {
+			if util.IsNilAnonymousField(tp, IPriorityType) {
+				util.Panic("nil IPriority interface in bean %v", reflect.TypeOf(tp))
+			}
+		}
+	}
 	sort.Slice(tagProcessors, func(i, j int) bool {
 		ip := math.MaxInt32
 		jp := math.MaxInt32
 		if reflect.TypeOf(tagProcessors[i]).AssignableTo(IPriorityType) {
+			priority := tagProcessors[i].(IPriority)
+			if priority == nil {
+				util.Panic("nil interface %v", reflect.TypeOf(tagProcessors[i]))
+			}
 			ip = tagProcessors[i].(IPriority).GetPriority()
 		}
 		if reflect.TypeOf(tagProcessors[j]).AssignableTo(IPriorityType) {
