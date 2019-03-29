@@ -15,7 +15,8 @@ type BeanConfigCondition struct {
 
 type BeanCondition struct {
 	gioc.IBeanCondition
-	ConfigA *BeanConfigCondition `cfg:"cfg.a"`
+	gioc.IConfigBase
+	ConfigA *BeanConfigCondition `cfg.d:"cfg.a"`
 	ConfigB *BeanConfigCondition `cfg:"cfg.b"`
 }
 
@@ -32,7 +33,10 @@ func main() {
 	builder.AddBean(gioc.NewTagParser())
 	builder.AddBean(gioc.NewBeanBeanConditionInjector())
 
-	builder.AddNamedBean("bean", &BeanCondition{IBeanCondition: gioc.NewConditionOnValue("cfg.base", true)})
+	builder.AddNamedBean("bean", &BeanCondition{
+		IBeanCondition: gioc.NewConditionOnValue("cfg.base", true),
+		IConfigBase:    gioc.NewConfigBase("cfg.base"),
+	})
 	builder.Build()
 	bean := builder.GetBeanContainer().GetBeanByName("bean").(*BeanCondition)
 	data, _ := json.Marshal(bean)

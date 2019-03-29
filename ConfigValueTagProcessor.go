@@ -12,7 +12,8 @@ cfg相关tag处理
 const (
 	ConfigTagProcessor = "config"
 	// 从配置文件中读取的配置项
-	ValueConfigTag = "cfg"
+	ValueConfigTag       = "cfg"
+	ValueConfigDomainTag = "cfg.d"
 	// 默认配置项
 	ValueDefaultTag = "cfg.default"
 )
@@ -51,23 +52,31 @@ func getConfigValueWithBase(values reader.Values, base, path string) reader.Valu
 func (this *configValueTagProcessor) TagProcess(bean interface{}, field reflect.Value, tags map[string]string) {
 	valDefault, defok := tags[ValueDefaultTag]
 	valConfig, cfgok := tags[ValueConfigTag]
+	valDomain, domainOk := tags[ValueConfigDomainTag]
 	if defok {
 		// 注入默认值，目前只支持基本类型
 		this.stringValueInjector.StringValueInjector(field, valDefault)
 	}
-	if cfgok {
+	if domainOk {
 		var value reader.Value
 		if reflect.TypeOf(bean).AssignableTo(IConfigBaseType) {
 			cfgBaseName := bean.(IConfigBase).ConfigBase()
 			if len(cfgBaseName) > 0 {
-				value = this.conf.Config().Get(cfgBaseName, valConfig)
+				value = this.conf.Config().Get(cfgBaseName, valDomain)
 			} else {
-				value = this.conf.Config().Get(valConfig)
+				value = this.conf.Config().Get(valDomain)
 			}
 		} else {
-			value = this.conf.Config().Get(valConfig)
+			value = this.conf.Config().Get(valDomain)
 		}
 
+		err := value.Scan(field.Addr().Interface())
+		if err != nil {
+			util.Panic("config scan failed %v:%v", valDomain, err)
+		}
+	}
+	if cfgok {
+		value := this.conf.Config().Get(valConfig)
 		err := value.Scan(field.Addr().Interface())
 		if err != nil {
 			util.Panic("config scan failed %v:%v", valConfig, err)
