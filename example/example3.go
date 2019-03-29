@@ -7,15 +7,16 @@ import (
 	"github.com/gosrv/goioc/util"
 )
 
-type BeanConfig struct {
+type BeanConfigBase struct {
 	Name  string
 	Level int
 	Age   int
 }
 
-type Bean struct {
-	ConfigA *BeanConfig `cfg:"cfg.a"`
-	ConfigB *BeanConfig `cfg:"cfg.b"`
+type BeanBase struct {
+	goioc.IConfigBase
+	ConfigA *BeanConfigBase `cfg:"cfg.a"`
+	ConfigB *BeanConfigBase `cfg:"cfg.b"`
 }
 
 func main() {
@@ -29,9 +30,9 @@ func main() {
 	builder.AddBean(goioc.NewConfigValueTagProcessor(loader))
 	builder.AddBean(goioc.NewTagParser())
 
-	builder.AddNamedBean("bean", &Bean{})
+	builder.AddNamedBean("bean", &BeanBase{IConfigBase: goioc.NewConfigBase("cfg.base")})
 	builder.Build()
-	bean := builder.GetBeanContainer().GetBeanByName("bean").(*Bean)
+	bean := builder.GetBeanContainer().GetBeanByName("bean").(*BeanBase)
 	data, _ := json.Marshal(bean)
 	fmt.Println(string(data))
 }

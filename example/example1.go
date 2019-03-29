@@ -5,6 +5,7 @@ import (
 	"github.com/gosrv/goioc"
 	"reflect"
 )
+
 // beanA///////////////////////////////////////////////
 type IBeanA interface {
 	helloA()
@@ -12,12 +13,14 @@ type IBeanA interface {
 type BeanA struct {
 	msg string
 	// beanB的实例由ioc容器注入
-	beanB IBeanB	`bean`
+	beanB IBeanB `bean`
 }
-func (this *BeanA)helloA() {
+
+func (this *BeanA) helloA() {
 	fmt.Print(this.msg)
 	this.beanB.helloB()
 }
+
 // beanB///////////////////////////////////////////////
 type IBeanB interface {
 	helloB()
@@ -26,7 +29,7 @@ type BeanB struct {
 	msg string
 }
 
-func (this *BeanB)helloB()  {
+func (this *BeanB) helloB() {
 	fmt.Println(this.msg)
 }
 
@@ -37,7 +40,7 @@ func main() {
 	builder.AddBean(goioc.NewTagParser())
 
 	// add beans and build
-	builder.AddBean(&BeanA{msg:"hello "}, &BeanB{"world"})
+	builder.AddBean(&BeanA{msg: "hello "}, &BeanB{"world"})
 	builder.Build()
 
 	// find assembly bean

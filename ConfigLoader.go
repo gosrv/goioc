@@ -4,36 +4,51 @@ import (
 	"github.com/micro/go-config"
 	"github.com/micro/go-config/reader"
 	"github.com/micro/go-config/source/file"
+	"reflect"
 )
+
+type IConfigBase interface {
+	ConfigBase() string
+}
+
+var IConfigBaseType = reflect.TypeOf((*IConfigBase)(nil)).Elem()
+
+type configBase struct {
+	base string
+}
+
+func NewConfigBase(base string) *configBase {
+	return &configBase{base: base}
+}
+
+func (this configBase) ConfigBase() string {
+	return this.base
+}
 
 type IConfigLoader interface {
 	Config() reader.Values
 	Load(cfgFileName string) error
 }
 
-type IConfigLoaderAware interface {
-	SetConfigLoader(configLoader IConfigLoader)
-}
-
-func NewConfigLoader() *DefaultConfigAutoLoader {
-	return &DefaultConfigAutoLoader{
+func NewConfigLoader() *configAutoLoader {
+	return &configAutoLoader{
 		conf: config.NewConfig(),
 	}
 }
 
-type DefaultConfigAutoLoader struct {
+type configAutoLoader struct {
 	conf config.Config
 }
 
-func (this *DefaultConfigAutoLoader) RawConf() config.Config {
+func (this *configAutoLoader) RawConf() config.Config {
 	return this.conf
 }
 
-func (this *DefaultConfigAutoLoader) Config() reader.Values {
+func (this *configAutoLoader) Config() reader.Values {
 	return this.conf
 }
 
-func (this *DefaultConfigAutoLoader) Load(cfgFileName string) error {
+func (this *configAutoLoader) Load(cfgFileName string) error {
 	return this.conf.Load(file.NewSource(
 		file.WithPath(cfgFileName),
 	))

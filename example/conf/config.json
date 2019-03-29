@@ -5,11 +5,11 @@
     "Level": 99,
     "Age": 17
   },
-  "cfg": {
-    "b": {
-      "Name": "steven",
-      "Level": 101,
-      "Age": 18
+  "cfg.base": {
+    "cfg.a": {
+      "Name": "11",
+      "Level": 11,
+      "Age": 11
     }
   }
 }

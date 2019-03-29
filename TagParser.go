@@ -13,6 +13,11 @@ tag解析，使用go默认的tag解析
 type ITagParser interface {
 	Parse(tag reflect.StructTag) map[string]string
 }
+type FuncTagParser func(tag reflect.StructTag) map[string]string
+
+func (this FuncTagParser) Parse(tag reflect.StructTag) map[string]string {
+	return this(tag)
+}
 
 var ITagParserType = reflect.TypeOf((*ITagParser)(nil)).Elem()
 
@@ -37,14 +42,11 @@ var TagParserHelper = struct {
 	},
 }
 
-type DefaultTagParser struct {
-}
-
 func NewTagParser() ITagParser {
-	return &DefaultTagParser{}
+	return FuncTagParser(tgParser)
 }
 
-func (this *DefaultTagParser) Parse(tag reflect.StructTag) map[string]string {
+func tgParser(tag reflect.StructTag) map[string]string {
 	s := make(map[string]string)
 	for tag != "" {
 		// Skip leading space.

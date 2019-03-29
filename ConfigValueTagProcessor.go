@@ -2,8 +2,8 @@ package goioc
 
 import (
 	"github.com/gosrv/goioc/util"
+	"github.com/micro/go-config/reader"
 	"reflect"
-	"strings"
 )
 
 /**
@@ -37,6 +37,17 @@ func (this *configValueTagProcessor) GetPriority() int {
 	return PrioritySystem
 }
 
+func getConfigValue(values reader.Values, path string) reader.Value {
+	return values.Get(path)
+}
+
+func getConfigValueWithBase(values reader.Values, base, path string) reader.Value {
+	if len(base) == 0 {
+		return getConfigValue(values, path)
+	}
+	return values.Get(base, path)
+}
+
 func (this *configValueTagProcessor) TagProcess(bean interface{}, field reflect.Value, tags map[string]string) {
 	valDefault, defok := tags[ValueDefaultTag]
 	valConfig, cfgok := tags[ValueConfigTag]
@@ -45,19 +56,21 @@ func (this *configValueTagProcessor) TagProcess(bean interface{}, field reflect.
 		this.stringValueInjector.StringValueInjector(field, valDefault)
 	}
 	if cfgok {
-		// 注入配置文件中的配置
-		_, ok := this.conf.Config().Map()[valConfig]
-		if !ok {
-			subcfgs := strings.Split(valConfig, ".")
-			err := this.conf.Config().Get(subcfgs...).Scan(field.Addr().Interface())
-			if err != nil {
-				util.Panic("config scan failed %v:%v", valConfig, err)
+		var value reader.Value
+		if reflect.TypeOf(bean).AssignableTo(IConfigBaseType) {
+			cfgBaseName := bean.(IConfigBase).ConfigBase()
+			if len(cfgBaseName) > 0 {
+				value = this.conf.Config().Get(cfgBaseName, valConfig)
+			} else {
+				value = this.conf.Config().Get(valConfig)
 			}
 		} else {
-			err := this.conf.Config().Get(valConfig).Scan(field.Addr().Interface())
-			if err != nil {
-				util.Panic("config scan failed %v:%v", valConfig, err)
-			}
+			value = this.conf.Config().Get(valConfig)
+		}
+
+		err := value.Scan(field.Addr().Interface())
+		if err != nil {
+			util.Panic("config scan failed %v:%v", valConfig, err)
 		}
 	}
 }
