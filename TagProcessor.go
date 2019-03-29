@@ -8,7 +8,10 @@ import (
 type ITagProcessor interface {
 	TagProcessorName() string
 	TagProcess(bean interface{}, field reflect.Value, tags map[string]string)
+	Priority() int
 }
+
+var ITagProcessorType = reflect.TypeOf((*ITagProcessor)(nil)).Elem()
 
 var TagProcessorHelper = struct {
 	GetTagProcessor func(beanContainer IBeanContainer) []ITagProcessor

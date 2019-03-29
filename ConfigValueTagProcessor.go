@@ -33,7 +33,7 @@ func (this *configValueTagProcessor) TagProcessorName() string {
 	return ConfigTagProcessor
 }
 
-func (this *configValueTagProcessor) GetPriority() int {
+func (this *configValueTagProcessor) Priority() int {
 	return PrioritySystem
 }
 
