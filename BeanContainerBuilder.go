@@ -42,8 +42,8 @@ func newBeanCtx(name string, beanIns interface{}) *beanCtx {
 		beanIns:   beanIns,
 		beanValue: reflect.ValueOf(beanIns),
 		beanType:  reflect.TypeOf(beanIns),
-		eleValue: 	util.Rfl.UnptrValue(beanIns),
-		eleType: 	util.Rfl.UnptrType(beanIns),
+		eleValue:  util.Rfl.UnptrValue(beanIns),
+		eleType:   util.Rfl.UnptrType(beanIns),
 	}
 
 	if ctx.eleType.Kind() != reflect.Struct {
@@ -162,20 +162,26 @@ func (this *defaultBeanContainerBuilder) Build() {
 		util.Panic("no tag parser found!!!, you must add exace 1 tag parser")
 	}
 
+	startAssembly := BeanProcessHelper.GetBeanStartAssembly(this.beanContainer)
+	for _, assembly := range startAssembly {
+		assembly.BeanStartAssembly(this.beanContainer)
+	}
+
 	for _, tagProcessor := range tagProcessors {
 		for _, bean := range this.beanContainer.GetAllBeans() {
-			var process IBeanProcess = nil
-			if reflect.TypeOf(bean).AssignableTo(IBeanProcessType) {
-				process = bean.(IBeanProcess)
-			}
-			if process != nil {
-				process.BeanBeforeTagProcess(tagProcessor, this.beanContainer)
+			if reflect.TypeOf(bean).AssignableTo(IBeanBeforeTagProcessType) {
+				bean.(IBeanBeforeTagProcess).BeanBeforeTagProcess(tagProcessor, this.beanContainer)
 			}
 			TagProcessorHelper.BeanTagProcess(bean, tagParser, tagProcessor)
-			if process != nil {
-				process.BeanAfterTagProcess(tagProcessor, this.beanContainer)
+			if reflect.TypeOf(bean).AssignableTo(IBeanAfterTagProcessType) {
+				bean.(IBeanAfterTagProcess).BeanAfterTagProcess(tagProcessor, this.beanContainer)
 			}
 		}
+	}
+
+	finishAssembly := BeanProcessHelper.GetBeanFinishAssembly(this.beanContainer)
+	for _, assembly := range finishAssembly {
+		assembly.BeanFinishAssembly(this.beanContainer)
 	}
 }
 
