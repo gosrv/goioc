@@ -12,6 +12,12 @@ func Assert(condition bool, msg string) {
 	}
 }
 
+func Verify(cond bool) {
+	if !cond {
+		Panic("verify error")
+	}
+}
+
 func VerifyNotNull(ins interface{}) {
 	if ins == nil {
 		Panic("nil interface")
