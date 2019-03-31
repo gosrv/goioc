@@ -7,14 +7,10 @@ import (
 
 const flagRO = uintptr((1 << 5) | (1 << 6))
 
-var Hack = struct {
-	ValuePatchWrite           func(val reflect.Value) reflect.Value
-	ValuePatchWriteRecurrence func(val reflect.Value) reflect.Value
-}{
-	ValuePatchWrite: valuePatchWrite,
+type hack struct {
 }
 
-func valuePatchWrite(val reflect.Value) reflect.Value {
+func (this *hack) ValuePatchWrite(val reflect.Value) reflect.Value {
 	if val.CanSet() {
 		return val
 	}
@@ -29,3 +25,5 @@ func valuePatchWrite(val reflect.Value) reflect.Value {
 	*flagPtr = *flagPtr &^ flagRO
 	return val
 }
+
+var Hack = &hack{}

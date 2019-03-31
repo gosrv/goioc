@@ -11,15 +11,15 @@ type IBeanProcess interface {
 
 var IBeanProcessType = reflect.TypeOf((*IBeanProcess)(nil)).Elem()
 
-var BeanProcessHelper = struct {
-	GetBeanProcess func(beanContainer IBeanContainer) []IBeanProcess
-}{
-	GetBeanProcess: func(beanContainer IBeanContainer) []IBeanProcess {
-		tagProcessorInss := beanContainer.GetBeanByType(reflect.TypeOf((*IBeanProcess)(nil)).Elem())
-		tagProcessors := make([]IBeanProcess, len(tagProcessorInss), len(tagProcessorInss))
-		for i := 0; i < len(tagProcessorInss); i++ {
-			tagProcessors[i] = tagProcessorInss[i].(IBeanProcess)
-		}
-		return tagProcessors
-	},
+type beanProcessHelper struct{}
+
+func (this *beanProcessHelper) GetBeanProcess(beanContainer IBeanContainer) []IBeanProcess {
+	tagProcessorInss := beanContainer.GetBeanByType(reflect.TypeOf((*IBeanProcess)(nil)).Elem())
+	tagProcessors := make([]IBeanProcess, len(tagProcessorInss), len(tagProcessorInss))
+	for i := 0; i < len(tagProcessorInss); i++ {
+		tagProcessors[i] = tagProcessorInss[i].(IBeanProcess)
+	}
+	return tagProcessors
 }
+
+var BeanProcessHelper = &beanProcessHelper{}

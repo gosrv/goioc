@@ -9,22 +9,20 @@ type ITagProcessor interface {
 	TagProcessorName() string
 	TagProcess(bean interface{}, field reflect.Value, tags map[string]string)
 }
+
 var ITagProcessorType = reflect.TypeOf((*ITagProcessor)(nil)).Elem()
 
 type ITagProcessorPriority interface {
 	GetTagProcessorPriority() int
 }
+
 var ITagProcessorPriorityType = reflect.TypeOf((*ITagProcessorPriority)(nil)).Elem()
 
-var TagProcessorHelper = struct {
-	GetTagProcessor func(beanContainer IBeanContainer) []ITagProcessor
-	BeanTagProcess  func(bean interface{}, parser ITagParser, processors ...ITagProcessor)
-}{
-	GetTagProcessor: getTagProcessor,
-	BeanTagProcess:  beanTagProcess,
-}
+type tagProcessorHelper struct{}
 
-func getTagProcessor(beanContainer IBeanContainer) []ITagProcessor {
+var TagProcessorHelper = &tagProcessorHelper{}
+
+func (this *tagProcessorHelper) GetTagProcessor(beanContainer IBeanContainer) []ITagProcessor {
 	tagProcessorInss := beanContainer.GetBeanByType(reflect.TypeOf((*ITagProcessor)(nil)).Elem())
 	tagProcessors := make([]ITagProcessor, len(tagProcessorInss), len(tagProcessorInss))
 	for i := 0; i < len(tagProcessorInss); i++ {
@@ -33,7 +31,7 @@ func getTagProcessor(beanContainer IBeanContainer) []ITagProcessor {
 	return tagProcessors
 }
 
-func beanTagProcess(bean interface{}, parser ITagParser, processors ...ITagProcessor) {
+func (this *tagProcessorHelper) BeanTagProcess(bean interface{}, parser ITagParser, processors ...ITagProcessor) {
 	beanVal := reflect.ValueOf(bean)
 	beanType := reflect.TypeOf(bean)
 
