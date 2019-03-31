@@ -42,14 +42,8 @@ func newBeanCtx(name string, beanIns interface{}) *beanCtx {
 		beanIns:   beanIns,
 		beanValue: reflect.ValueOf(beanIns),
 		beanType:  reflect.TypeOf(beanIns),
-	}
-
-	ctx.eleValue = ctx.beanValue
-	ctx.eleType = ctx.beanType
-
-	for ctx.eleType.Kind() == reflect.Ptr {
-		ctx.eleValue = ctx.eleValue.Elem()
-		ctx.eleType = ctx.eleType.Elem()
+		eleValue: 	util.Rfl.UnptrValue(beanIns),
+		eleType: 	util.Rfl.UnptrType(beanIns),
 	}
 
 	if ctx.eleType.Kind() != reflect.Struct {

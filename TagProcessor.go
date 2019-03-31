@@ -32,13 +32,8 @@ func (this *tagProcessorHelper) GetTagProcessor(beanContainer IBeanContainer) []
 }
 
 func (this *tagProcessorHelper) BeanTagProcess(bean interface{}, parser ITagParser, processors ...ITagProcessor) {
-	beanVal := reflect.ValueOf(bean)
-	beanType := reflect.TypeOf(bean)
-
-	for beanVal.Kind() == reflect.Ptr {
-		beanVal = beanVal.Elem()
-		beanType = beanType.Elem()
-	}
+	beanVal := util.Rfl.UnptrValue(bean)
+	beanType := util.Rfl.UnptrType(bean)
 	if beanType.Kind() != reflect.Struct {
 		return
 	}
