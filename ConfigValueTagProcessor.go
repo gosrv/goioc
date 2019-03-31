@@ -61,10 +61,16 @@ func (this *configValueTagProcessor) TagProcess(bean interface{}, field reflect.
 		var value reader.Value
 		if reflect.TypeOf(bean).AssignableTo(IConfigBaseType) {
 			cfgBaseName := bean.(IConfigBase).ConfigBase()
-			if len(cfgBaseName) > 0 {
+			if len(cfgBaseName) > 0 && len(valDomain) > 0 {
 				value = this.conf.Config().Get(cfgBaseName, valDomain)
 			} else {
-				value = this.conf.Config().Get(valDomain)
+				if len(cfgBaseName) > 0 {
+					value = this.conf.Config().Get(cfgBaseName)
+				} else if len(valDomain) > 0 {
+					value = this.conf.Config().Get(valDomain)
+				} else {
+					util.Panic("base and domain can not both empty")
+				}
 			}
 		} else {
 			value = this.conf.Config().Get(valDomain)
