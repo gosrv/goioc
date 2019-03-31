@@ -96,13 +96,13 @@ func NewConditionOnValue(value string, exist bool) IBeanCondition {
 }
 
 // 已经有bean存在或不存在
-type conditionOnBean struct {
+type conditionOnBeanType struct {
 	beanType      reflect.Type
 	exit          bool
 	beanContainer IBeanContainer `bean`
 }
 
-func (this *conditionOnBean) IsConditionPass() bool {
+func (this *conditionOnBeanType) IsConditionPass() bool {
 	if this.beanContainer == nil {
 		return false
 	}
@@ -110,9 +110,30 @@ func (this *conditionOnBean) IsConditionPass() bool {
 	return (this.exit && realExist) || (!this.exit && !realExist)
 }
 
-func NewConditionOnBean(beanType reflect.Type, exit bool) *conditionOnBean {
-	return &conditionOnBean{
+func NewConditionOnBeanType(beanType reflect.Type, exit bool) *conditionOnBeanType {
+	return &conditionOnBeanType{
 		beanType: beanType,
+		exit:     exit,
+	}
+}
+
+type conditionOnBeanName struct {
+	beanName      string
+	exit          bool
+	beanContainer IBeanContainer `bean`
+}
+
+func (this *conditionOnBeanName) IsConditionPass() bool {
+	if this.beanContainer == nil {
+		return false
+	}
+	realExist := this.beanContainer.GetBeanByName(this.beanName) != nil
+	return (this.exit && realExist) || (!this.exit && !realExist)
+}
+
+func NewConditionOnBeanName(beanName string, exit bool) *conditionOnBeanName {
+	return &conditionOnBeanName{
+		beanName: beanName,
 		exit:     exit,
 	}
 }
