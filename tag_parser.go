@@ -21,26 +21,27 @@ func (this FuncTagParser) Parse(tag reflect.StructTag) map[string]string {
 
 var ITagParserType = reflect.TypeOf((*ITagParser)(nil)).Elem()
 
-var TagParserHelper = struct {
-	GetTagParser func(beanContainer IBeanContainer) ITagParser
-}{
-	GetTagParser: func(beanContainer IBeanContainer) ITagParser {
-		tagParserInss := beanContainer.GetBeanByType(ITagParserType)
-		switch len(tagParserInss) {
-		case 0:
-			return nil
-		case 1:
-			return tagParserInss[0].(ITagParser)
-		default:
-			parserTypes := ""
-			for _, tp := range tagParserInss {
-				parserTypes += fmt.Sprintf("%v ", reflect.TypeOf(tp))
-			}
-			util.Panic("expect only 1 tag parser, but find %v:[%v]", len(tagParserInss), parserTypes)
-		}
-		return nil
-	},
+type tagParserHelper struct {
 }
+
+func (this *tagParserHelper) GetTagParser(beanContainer IBeanContainer) ITagParser {
+	tagParserInss := beanContainer.GetBeanByType(ITagParserType)
+	switch len(tagParserInss) {
+	case 0:
+		return nil
+	case 1:
+		return tagParserInss[0].(ITagParser)
+	default:
+		parserTypes := ""
+		for _, tp := range tagParserInss {
+			parserTypes += fmt.Sprintf("%v ", reflect.TypeOf(tp))
+		}
+		util.Panic("expect only 1 tag parser, but find %v:[%v]", len(tagParserInss), parserTypes)
+	}
+	return nil
+}
+
+var TagParserHelper = &tagParserHelper{}
 
 func NewTagParser() ITagParser {
 	return FuncTagParser(tgParser)

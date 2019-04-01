@@ -34,16 +34,16 @@ func (this *BeanB) helloB() {
 }
 
 func main() {
-	// init
+	// 创建容器构建器
 	builder := gioc.NewBeanContainerBuilder()
+	// 加入tag处理器和tag解析器
 	builder.AddBean(gioc.NewBeanTagProcessor(builder.GetBeanContainer()))
 	builder.AddBean(gioc.NewTagParser())
-
-	// add beans and build
+	// 加入bean
 	builder.AddBean(&BeanA{msg: "hello "}, &BeanB{"world"})
+	// 构建容器
 	builder.Build()
-
-	// find assembly bean
+	// 获取bean
 	container := builder.GetBeanContainer()
 	beanA := container.GetBeanByType(reflect.TypeOf((*IBeanA)(nil)).Elem())[0].(IBeanA)
 	beanA.helloA()
