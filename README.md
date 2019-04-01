@@ -48,3 +48,6 @@ go ioc framework
 
 ### exaple
 请查看example1.go/example2.go/example3.go/example4.go
+### gcluster
+https://github.com/gosrv/gcluster
+ioc容器的应用：游戏服务器引擎框架（用来开发游戏引擎的引擎）
