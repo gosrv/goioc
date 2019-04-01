@@ -4,6 +4,7 @@ go ioc framework
 # star it && QQ群：869428810
 
 ### 使用步骤
+0. go get github.com/gosrv/goioc
 1. 加载配置文件
 ```$go
 	loader := gioc.NewConfigLoader()
