@@ -13,6 +13,7 @@ tag解析，使用go默认的tag解析
 type ITagParser interface {
 	Parse(tag reflect.StructTag) map[string]string
 }
+
 type FuncTagParser func(tag reflect.StructTag) map[string]string
 
 func (this FuncTagParser) Parse(tag reflect.StructTag) map[string]string {

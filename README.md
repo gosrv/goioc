@@ -3,15 +3,43 @@ go ioc framework
 
 # star it && QQ群：869428810
 
+### 使用步骤
+1. 加载配置文件
+```$go
+	loader := gioc.NewConfigLoader()
+	err := loader.Load("example/conf/config.json")
+	util.VerifyNoError(err)
+```
+2. 创建IBeanContainerBuilder
+```$go
+    builder := gioc.NewBeanContainerBuilder()
+```
+3. 加入1个ITagParser和若干个ITagProcessor
+```$go
+	builder.AddBean(loader)
+	builder.AddBean(gioc.NewBeanTagProcessor(builder.GetBeanContainer()))
+	builder.AddBean(gioc.NewConfigValueTagProcessor(loader))
+	builder.AddBean(gioc.NewTagParser())
+	builder.AddBean(gioc.NewBeanBeanConditionInjector())
+```
+4. 加入专属bean
+```$go
+    builder.AddBean(otherBeans...)
+```
+5. 构建容器
+```$go
+    builder.Build()
+```
+
 ### bean
-放入容器中的对象就是一个bean，容器可以针对bean的成员变量做一些注入操作
+放入容器中的对象就是一个bean，容器可以针对bean的成员变量做一些注入操作，比如其它bean实例的注入，或者配置数据的注入
 
 ### IBeanContainerBuilder
-用来构建bean容器，并完成bean的注入，bean的注入操作由ITagProcessor完成  
+用来构建bean容器，并完成注入，bean的注入操作由ITagProcessor完成  
 构建过程
-1. 收集满足条件的bean
+1. 收集满足条件的bean（通过IBeanCondition判断条件十分成立）
 2. 获取所有的ITagProcessor，并按优先级排序
-3. 按ITagProcessor的优先级先后处理所有满足条件的bean
+3. 按ITagProcessor的优先级先后处理所有满足条件的bean，这也是注入处理
 
 ### IBeanCondition
 通过内嵌接口IBeanCondition来实现条件判断，只有生效的bean才会被容器操作
@@ -31,6 +59,11 @@ go ioc framework
 通过bean名字注入，必须存在并且只能有一个
 3. "bean.required"
 如果没找到会不会报错，默认是true
+```$go
+    type BeanC struct {
+        beanA IBeanA	`bean:"" bean.name:"beana" bean.required:"true"`
+    }
+```
 
 ### tag cfg
 1. "cfg"
@@ -39,6 +72,20 @@ go ioc framework
 注入特定域的配置项，与IConfigBase配合使用,调整配置注入的根节点
 3. "cfg.default"
 如果配置文件中不存，则使用的默认配置
+```$go
+    type BeanConfig struct {
+        Name  string
+        Level int
+        Age   int
+    }
+    
+    type Bean struct {
+        // 注入配置文件的配置项"cfg.a"
+        ConfigA *BeanConfig `cfg:"cfg.a"`
+        // 注入配置文件的配置项"cfg.b"
+        ConfigB *BeanConfig `cfg:"cfg.b"`
+    }
+```
 
 ### ITagProcessor
 可以通过实现接口ITagProcessor来自定义tag注入器，你还可以为它指定一个优先级，如果它没有任何依赖，则可以设置为系统级tag

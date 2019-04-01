@@ -50,6 +50,11 @@ func newBeanCtx(name string, beanIns interface{}) *beanCtx {
 		return ctx
 	}
 
+	if ctx.beanValue.IsNil() {
+		util.Panic("nil bean %v", ctx.beanType)
+		return ctx
+	}
+
 	for i := 0; i < ctx.eleValue.NumField(); i++ {
 		fieldType := ctx.eleType.Field(i)
 		fieldValue := ctx.eleValue.Field(i)
