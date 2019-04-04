@@ -59,8 +59,8 @@ func (this *configValueTagProcessor) TagProcess(bean interface{}, field reflect.
 	}
 	if domainOk {
 		var value reader.Value
-		if reflect.TypeOf(bean).AssignableTo(IConfigBaseType) {
-			cfgBaseName := bean.(IConfigBase).ConfigBase()
+		if configBase, ok := bean.(IConfigBase); ok {
+			cfgBaseName := configBase.ConfigBase()
 			if len(cfgBaseName) > 0 && len(valDomain) > 0 {
 				value = this.conf.Config().Get(cfgBaseName, valDomain)
 			} else {

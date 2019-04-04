@@ -2,7 +2,6 @@ package gioc
 
 import (
 	"math"
-	"reflect"
 	"sort"
 )
 
@@ -37,22 +36,22 @@ func (this *BeanInitDriver) sort() {
 	sort.Slice(this.BeansInit, func(i, j int) bool {
 		ip := math.MaxInt32
 		jp := math.MaxInt32
-		if reflect.TypeOf(this.BeansInit[i]).AssignableTo(reflect.TypeOf((*IPriority)(nil)).Elem()) {
-			ip = this.BeansInit[i].(IPriority).GetPriority()
+		if iPriority, ok := this.BeansInit[i].(IPriority); ok {
+			ip = iPriority.GetPriority()
 		}
-		if reflect.TypeOf(this.BeansInit[j]).AssignableTo(reflect.TypeOf((*IPriority)(nil)).Elem()) {
-			jp = this.BeansInit[j].(IPriority).GetPriority()
+		if jPriority, ok := this.BeansInit[j].(IPriority); ok {
+			jp = jPriority.GetPriority()
 		}
 		return ip < jp
 	})
 	sort.Slice(this.BeansStart, func(i, j int) bool {
 		ip := math.MaxInt32
 		jp := math.MaxInt32
-		if reflect.TypeOf(this.BeansStart[i]).AssignableTo(reflect.TypeOf((*IPriority)(nil)).Elem()) {
-			ip = this.BeansStart[i].(IPriority).GetPriority()
+		if iPriority, ok := this.BeansStart[i].(IPriority); ok {
+			ip = iPriority.GetPriority()
 		}
-		if reflect.TypeOf(this.BeansStart[j]).AssignableTo(reflect.TypeOf((*IPriority)(nil)).Elem()) {
-			jp = this.BeansStart[j].(IPriority).GetPriority()
+		if jPriority, ok := this.BeansStart[j].(IPriority); ok {
+			jp = jPriority.GetPriority()
 		}
 		return ip < jp
 	})

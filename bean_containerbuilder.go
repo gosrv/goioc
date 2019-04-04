@@ -145,7 +145,8 @@ func (this *defaultBeanContainerBuilder) Build() {
 		if tp == nil {
 			util.Panic("nil tag processor")
 		}
-		if reflect.TypeOf(tp).AssignableTo(ITagProcessorPriorityType) && util.IsNilAnonymousField(tp, ITagProcessorPriorityType) {
+		_, priorityOk := tp.(ITagProcessorPriority)
+		if priorityOk && util.IsNilAnonymousField(tp, ITagProcessorPriorityType) {
 			util.Panic("nil ITagProcessorPriority interface in bean ITagProcessor:%v", reflect.TypeOf(tp))
 		}
 	}
@@ -153,11 +154,11 @@ func (this *defaultBeanContainerBuilder) Build() {
 	sort.Slice(tagProcessors, func(i, j int) bool {
 		ip := math.MaxInt32
 		jp := math.MaxInt32
-		if reflect.TypeOf(tagProcessors[i]).AssignableTo(ITagProcessorPriorityType) {
-			ip = tagProcessors[i].(ITagProcessorPriority).GetTagProcessorPriority()
+		if iPriority, ok := tagProcessors[i].(ITagProcessorPriority); ok {
+			ip = iPriority.GetTagProcessorPriority()
 		}
-		if reflect.TypeOf(tagProcessors[j]).AssignableTo(ITagProcessorPriorityType) {
-			jp = tagProcessors[j].(ITagProcessorPriority).GetTagProcessorPriority()
+		if jPriority, ok := tagProcessors[j].(ITagProcessorPriority); ok {
+			jp = jPriority.GetTagProcessorPriority()
 		}
 		return ip < jp
 	})
@@ -174,12 +175,12 @@ func (this *defaultBeanContainerBuilder) Build() {
 
 	for _, tagProcessor := range tagProcessors {
 		for _, bean := range this.beanContainer.GetAllBeans() {
-			if reflect.TypeOf(bean).AssignableTo(IBeanBeforeTagProcessType) {
-				bean.(IBeanBeforeTagProcess).BeanBeforeTagProcess(tagProcessor, this.beanContainer)
+			if beanBeforeTagProcess, ok := bean.(IBeanBeforeTagProcess); ok {
+				beanBeforeTagProcess.BeanBeforeTagProcess(tagProcessor, this.beanContainer)
 			}
 			TagProcessorHelper.BeanTagProcess(bean, tagParser, tagProcessor)
-			if reflect.TypeOf(bean).AssignableTo(IBeanAfterTagProcessType) {
-				bean.(IBeanAfterTagProcess).BeanAfterTagProcess(tagProcessor, this.beanContainer)
+			if beanAfterTagProcess, ok := bean.(IBeanAfterTagProcess); ok {
+				beanAfterTagProcess.BeanAfterTagProcess(tagProcessor, this.beanContainer)
 			}
 		}
 	}

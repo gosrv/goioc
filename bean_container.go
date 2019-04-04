@@ -34,8 +34,8 @@ func NewBeanContainer() *defaultBeanContainer {
 
 func (this *defaultBeanContainer) AddBean(beans ...interface{}) {
 	for _, bean := range beans {
-		if reflect.TypeOf(bean).AssignableTo(IBeanNameType) {
-			this.AddNamedBean(bean.(IBeanName).BeanName(), bean)
+		if beanName, ok := bean.(IBeanName); ok {
+			this.AddNamedBean(beanName.BeanName(), bean)
 		} else {
 			this.doAddBean(bean)
 		}
@@ -47,8 +47,8 @@ func (this *defaultBeanContainer) AddNamedBean(name string, bean interface{}) {
 		util.Panic("nil bean interface")
 	}
 
-	if reflect.TypeOf(bean).AssignableTo(IBeanNameType) {
-		if name != bean.(IBeanName).BeanName() {
+	if beanName, ok := bean.(IBeanName); ok {
+		if name != beanName.BeanName() {
 			util.Panic("ambiguous bean name %v:%v", name, bean.(IBeanName).BeanName())
 		}
 	}
