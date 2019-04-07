@@ -23,6 +23,12 @@ type configValueTagProcessor struct {
 	stringValueInjector IStringValueInjector
 }
 
+func (this *configValueTagProcessor) PrepareProcess() {
+
+}
+
+var _ ITagProcessor = (*configValueTagProcessor)(nil)
+
 func NewConfigValueTagProcessor(conf IConfigLoader) ITagProcessor {
 	return &configValueTagProcessor{
 		conf:                conf,

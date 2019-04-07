@@ -174,6 +174,8 @@ func (this *defaultBeanContainerBuilder) Build() {
 	}
 
 	for _, tagProcessor := range tagProcessors {
+		tagProcessor.PrepareProcess()
+
 		for _, bean := range this.beanContainer.GetAllBeans() {
 			if beanBeforeTagProcess, ok := bean.(IBeanBeforeTagProcess); ok {
 				beanBeforeTagProcess.BeanBeforeTagProcess(tagProcessor, this.beanContainer)

@@ -7,6 +7,8 @@ import (
 
 type ITagProcessor interface {
 	TagProcessorName() string
+	// tag开始处理前会调用一次
+	PrepareProcess()
 	TagProcess(bean interface{}, field reflect.Value, tags map[string]string)
 }
 

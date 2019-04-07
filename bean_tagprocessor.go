@@ -22,6 +22,12 @@ type beanTagProcessor struct {
 	beanContainer IBeanContainer
 }
 
+func (this *beanTagProcessor) PrepareProcess() {
+
+}
+
+var _ ITagProcessor = (*beanTagProcessor)(nil)
+
 func NewBeanTagProcessor(beanContainer IBeanContainer) ITagProcessor {
 	return &beanTagProcessor{beanContainer: beanContainer}
 }
