@@ -40,7 +40,7 @@ func (this *beanTagProcessor) TagProcessorPriority() int {
 	return PrioritySystem
 }
 
-func (this *beanTagProcessor) TagProcess(bean interface{}, field reflect.Value, tags map[string]string) {
+func (this *beanTagProcessor) TagProcess(bean interface{}, fType reflect.StructField, fValue reflect.Value, tags map[string]string) {
 	_, beanOk := tags[BeanTag]
 	beanName, beanNameOk := tags[BeanNameTag]
 	beanRequiredVal, beanRequireOk := tags[BeanRequiredTag]
@@ -59,10 +59,10 @@ func (this *beanTagProcessor) TagProcess(bean interface{}, field reflect.Value, 
 	if beanNameOk {
 		fieldBean = this.beanContainer.GetBeanByName(beanName)
 	} else {
-		fieldTypeBeans := this.beanContainer.GetBeanByType(field.Type())
-		if len(fieldTypeBeans) == 0 && field.Type().Kind() == reflect.Slice {
-			elements := this.beanContainer.GetBeanByType(field.Type().Elem())
-			svalue := reflect.New(field.Type()).Elem()
+		fieldTypeBeans := this.beanContainer.GetBeanByType(fValue.Type())
+		if len(fieldTypeBeans) == 0 && fValue.Type().Kind() == reflect.Slice {
+			elements := this.beanContainer.GetBeanByType(fValue.Type().Elem())
+			svalue := reflect.New(fValue.Type()).Elem()
 			for _, ab := range elements {
 				svalue = reflect.Append(svalue, reflect.ValueOf(ab))
 			}
@@ -74,14 +74,14 @@ func (this *beanTagProcessor) TagProcess(bean interface{}, field reflect.Value, 
 				fieldBean = fieldTypeBeans[0]
 			default:
 				util.Panic("ambiguous bean type [%v] injct except 1 but find %v in bean %v",
-					field.Type(), len(fieldTypeBeans), reflect.TypeOf(bean))
+					fValue.Type(), len(fieldTypeBeans), reflect.TypeOf(bean))
 			}
 		}
 	}
 
 	if fieldBean != nil {
-		field.Set(reflect.ValueOf(fieldBean))
+		fValue.Set(reflect.ValueOf(fieldBean))
 	} else if beanRequire {
-		util.Panic("required bean %v in instance %v has not found", field.Type(), reflect.TypeOf(bean))
+		util.Panic("required bean %v in instance %v has not found", fValue.Type(), reflect.TypeOf(bean))
 	}
 }

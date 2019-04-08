@@ -9,7 +9,7 @@ type ITagProcessor interface {
 	TagProcessorName() string
 	// tag开始处理前会调用一次
 	PrepareProcess()
-	TagProcess(bean interface{}, field reflect.Value, tags map[string]string)
+	TagProcess(bean interface{}, fType reflect.StructField, fValue reflect.Value, tags map[string]string)
 }
 
 var ITagProcessorType = reflect.TypeOf((*ITagProcessor)(nil)).Elem()
@@ -50,7 +50,7 @@ func (this *tagProcessorHelper) BeanTagProcess(bean interface{}, parser ITagPars
 		tags := parser.Parse(fieldType.Tag)
 		fieldValue = util.Hack.ValuePatchWrite(fieldValue)
 		for _, tagProcessor := range processors {
-			tagProcessor.TagProcess(bean, fieldValue, tags)
+			tagProcessor.TagProcess(bean, fieldType, fieldValue, tags)
 		}
 	}
 }

@@ -55,13 +55,13 @@ func getConfigValueWithBase(values reader.Values, base, path string) reader.Valu
 	return values.Get(base, path)
 }
 
-func (this *configValueTagProcessor) TagProcess(bean interface{}, field reflect.Value, tags map[string]string) {
+func (this *configValueTagProcessor) TagProcess(bean interface{}, fType reflect.StructField, fValue reflect.Value, tags map[string]string) {
 	valDefault, defok := tags[ValueDefaultTag]
 	valConfig, cfgok := tags[ValueConfigTag]
 	valDomain, domainOk := tags[ValueConfigDomainTag]
 	if defok {
 		// 注入默认值，目前只支持基本类型
-		this.stringValueInjector.StringValueInjector(field, valDefault)
+		this.stringValueInjector.StringValueInjector(fValue, valDefault)
 	}
 	if domainOk {
 		var value reader.Value
@@ -82,14 +82,14 @@ func (this *configValueTagProcessor) TagProcess(bean interface{}, field reflect.
 			value = this.conf.Config().Get(valDomain)
 		}
 
-		err := value.Scan(field.Addr().Interface())
+		err := value.Scan(fValue.Addr().Interface())
 		if err != nil {
 			util.Panic("config scan failed %v:%v", valDomain, err)
 		}
 	}
 	if cfgok {
 		value := this.conf.Config().Get(valConfig)
-		err := value.Scan(field.Addr().Interface())
+		err := value.Scan(fValue.Addr().Interface())
 		if err != nil {
 			util.Panic("config scan failed %v:%v", valConfig, err)
 		}
