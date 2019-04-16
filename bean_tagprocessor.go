@@ -10,10 +10,7 @@ bean相关tag处理
 */
 const (
 	BeanTagProcessor = "bean"
-	// 根据类型装配
 	BeanTag = "bean"
-	// 根据名字装配
-	BeanNameTag = "bean.name"
 	// 必须存在，如果装配时不存在会报错，默认是true
 	BeanRequiredTag = "bean.required"
 )
@@ -41,19 +38,19 @@ func (this *beanTagProcessor) TagProcessorPriority() int {
 }
 
 func (this *beanTagProcessor) TagProcess(bean interface{}, fType reflect.StructField, fValue reflect.Value, tags map[string]string) {
-	_, beanOk := tags[BeanTag]
-	beanName, beanNameOk := tags[BeanNameTag]
+	beanName, beanOk := tags[BeanTag]
 	beanRequiredVal, beanRequireOk := tags[BeanRequiredTag]
 	beanRequire := true
 	if beanRequireOk {
 		beanRequire = beanRequiredVal == "true"
 	}
-	if beanNameOk || beanRequireOk {
+	if beanRequireOk {
 		beanOk = true
 	}
 	if !beanOk {
 		return
 	}
+	beanNameOk := len(beanName) > 0
 
 	var fieldBean interface{} = nil
 	if beanNameOk {

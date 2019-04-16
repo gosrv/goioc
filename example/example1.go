@@ -8,7 +8,7 @@ import (
 
 // beanA///////////////////////////////////////////////
 type BeanC struct {
-	beanA IBeanA `bean:"" bean.name:"beana" bean.required:"true"`
+	beanA IBeanA `bean:"beana" bean.required:"true"`
 }
 
 type IBeanA interface {
